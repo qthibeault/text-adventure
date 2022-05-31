@@ -39,8 +39,8 @@ doAttack state = do
     putStrLn (printf "Enemy does %d damage" playerDelta)
 
     return state {
-        playerHealth = playerHealth state + playerDelta,
-        enemyHealth = enemyHealth state + enemyDelta,
+        playerHealth = playerHealth state - playerDelta,
+        enemyHealth = enemyHealth state - enemyDelta,
         rng = finalRng
     }
     where (playerDelta, newRng) = uniformR (enemyAttack state) (rng state)
