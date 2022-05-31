@@ -1,17 +1,17 @@
 module Main where
 
-import System.IO
+import Data.Char   (toLower)
+import System.IO   (hFlush, stdout)
 import Text.Printf (printf)
-import Data.Char (toLower)
 
 data GameAction = Attack | Run
 
 data GameState = GameState {
     playerHealth :: Int,
-    enemyHealth :: Int
+    enemyHealth  :: Int
 }
 
-lowerString :: String -> String 
+lowerString :: String -> String
 lowerString = map toLower
 
 parseAction :: String -> Maybe GameAction
