@@ -33,15 +33,18 @@ playerPrompt state = do
     readAction
     where prompt = printf "Player: %d/Enemy: %d>" (playerHealth state) (enemyHealth state)
 
-doAttack :: GameState -> GameState
-doAttack state =
-    state {
+doAttack :: GameState -> IO GameState
+doAttack state = do
+    putStrLn (printf "Player does %d damage" enemyDelta)
+    putStrLn (printf "Enemy does %d damage" playerDelta)
+
+    return state {
         playerHealth = playerHealth state + playerDelta,
         enemyHealth = enemyHealth state + enemyDelta,
         rng = finalRng
     }
-    where (playerDelta, newRng) = uniformR (playerAttack state) (rng state)
-          (enemyDelta, finalRng) = uniformR (enemyAttack state) newRng
+    where (playerDelta, newRng) = uniformR (enemyAttack state) (rng state)
+          (enemyDelta, finalRng) = uniformR (playerAttack state) newRng
 
 step :: GameState -> IO ()
 step state
@@ -49,7 +52,7 @@ step state
     | enemyHealth state <= 0 = putStrLn "GREAT ENEMY DEFEATED"
     | otherwise = do
         action <- playerPrompt state
-        case action of Just Attack -> step $ doAttack state
+        case action of Just Attack -> doAttack state >>= step
                        Just Run    -> putStrLn "Fled"
                        Nothing     -> putStrLn "Unknown command" >>= \x -> step state
 
