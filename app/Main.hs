@@ -51,7 +51,7 @@ step state
         action <- playerPrompt state
         case action of Just Attack -> step $ doAttack state
                        Just Run    -> putStrLn "Fled"
-                       Nothing     -> putStrLn "Unknown command"
+                       Nothing     -> putStrLn "Unknown command" >>= \x -> step state
 
 main :: IO ()
 main = step initialState
