@@ -29,13 +29,19 @@ playerPrompt state = do
     readAction
     where prompt = printf "Player: %d/Enemy: %d>" (playerHealth state) (enemyHealth state)
 
+updateState :: GameState -> Int -> Int -> GameState
+updateState state playerDelta enemyDelta = GameState {
+    playerHealth = playerHealth state + playerDelta,
+    enemyHealth = enemyHealth state + enemyDelta
+}
+
 step :: GameState -> IO ()
 step state
     | playerHealth state <= 0 = putStrLn "YOU DIED"
     | enemyHealth state <= 0 = putStrLn "GREAT ENEMY DEFEATED"
     | otherwise = do
         action <- playerPrompt state
-        case action of Attack -> step GameState { playerHealth = playerHealth state - 1, enemyHealth = enemyHealth state - 2 }
+        case action of Attack -> step $ updateState state (-1) (-2)
                        Run -> putStrLn "Fled"
 
 main :: IO ()
