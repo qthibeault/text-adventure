@@ -14,15 +14,15 @@ data GameState = GameState {
 lowerString :: String -> String 
 lowerString = map toLower
 
-parseAction :: String -> GameAction
-parseAction "attack" = Attack
-parseAction "run" = Run
-parseAction _ = error "Invalid action"
+parseAction :: String -> Maybe GameAction
+parseAction "attack" = Just Attack
+parseAction "run"    = Just Run
+parseAction _        = Nothing
 
-readAction :: IO GameAction
+readAction :: IO (Maybe GameAction)
 readAction = parseAction . lowerString <$> getLine
 
-playerPrompt :: GameState -> IO GameAction 
+playerPrompt :: GameState -> IO (Maybe GameAction)
 playerPrompt state = do
     putStr prompt
     hFlush stdout
@@ -41,8 +41,9 @@ step state
     | enemyHealth state <= 0 = putStrLn "GREAT ENEMY DEFEATED"
     | otherwise = do
         action <- playerPrompt state
-        case action of Attack -> step $ updateState state (-1) (-2)
-                       Run -> putStrLn "Fled"
+        case action of Just Attack -> step $ updateState state (-1) (-2)
+                       Just Run    -> putStrLn "Fled"
+                       Nothing     -> putStrLn "Unknown command"
 
 main :: IO ()
 main = step initialState
